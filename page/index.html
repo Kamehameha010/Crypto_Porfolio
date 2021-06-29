@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/modules/export-data.js"></script>
+    <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="form-credentials">
+
+            <form action="">
+                <input type="text" class="text" name="apiKey" placeholder="API KEY"
+                    value="XUi5YncD1UqXyzZio8urvCEuWJyo1byUiEVbroT8jJR3jsd7ymPYoeLq7kjgwcgZ">
+                <br>
+                <input type="text" class="text" name="apiSecret" placeholder="API SECRET"
+                    value="rqQkTnb9uycOytKfoqhRNP54TvSyiqaduNmfwTyEHXgbWggB8XVnZ0TUSAb4m8JZ">
+                <br>
+                <input type="submit" value="Send">
+            </form>
+
+        </div>
+        <div class="container-result">
+        </div>
+        <figure class="highcharts-figure">
+            <div id="container"></div>
+            <p class="highcharts-description">
+              
+            </p>
+          </figure>
+    </div>
+
+    <script src="../bower_components/crypto-js/crypto-js.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>
