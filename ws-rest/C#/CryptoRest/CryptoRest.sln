@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31410.357
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CryptoRest.Api", "CryptoRest.Api.csproj", "{AB75A199-885E-437A-BCB6-3DA703202882}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CryptoRest.Library", "..\CryptoRest.Core\CryptoRest.Library.csproj", "{F313702C-BF57-4FB2-8309-487A9F37AFB5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AB75A199-885E-437A-BCB6-3DA703202882}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AB75A199-885E-437A-BCB6-3DA703202882}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AB75A199-885E-437A-BCB6-3DA703202882}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AB75A199-885E-437A-BCB6-3DA703202882}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F313702C-BF57-4FB2-8309-487A9F37AFB5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F313702C-BF57-4FB2-8309-487A9F37AFB5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F313702C-BF57-4FB2-8309-487A9F37AFB5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F313702C-BF57-4FB2-8309-487A9F37AFB5}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {84B86777-AF74-4950-8B21-05023DB3C197}
+	EndGlobalSection
+EndGlobal
