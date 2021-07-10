@@ -1,9 +1,8 @@
-﻿using CryptoRest.Library.Entities;
+﻿using CryptoRest.Library.Config;
+using CryptoRest.Library.Entities;
 using CryptoRest.Library.Interfaces;
-using CryptoRest.Library.Utility;
 using System.Collections.Generic;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -11,19 +10,14 @@ namespace CryptoRest.Library.Services
 {
     public class HttpRequest : IHttpRequest
     {
-        public async Task<object> GetAsync(Request request)
+        public async Task<object> GetAsync(string url, Dictionary<string, string>? headers)
         {
 
-            var response = new object();
-
             using var clientRequest = new HttpClient();
-            SetHeaders(in clientRequest, request.Headers);
-            
-            using var req = await clientRequest.GetAsync(UrlUtility.CreateUri(request));
+            HttpRequestHeaders.SetHeaders(clientRequest, headers);
+            using var req = await clientRequest.GetAsync(url);
             string apiResponse = await req.Content.ReadAsStringAsync();
-            
-            response = JsonSerializer.Deserialize<object>(apiResponse);
-            
+            var response = JsonSerializer.Deserialize<object>(apiResponse);
             return response;
         }
 
@@ -32,12 +26,6 @@ namespace CryptoRest.Library.Services
             throw new System.NotImplementedException();
         }
 
-        private void SetHeaders(in HttpClient httpClient, IDictionary<string, string> headers)
-        {
-            foreach (var header in headers)
-            {
-                httpClient.DefaultRequestHeaders.Add(header.Key, header.Value);
-            }
-        }
+
     }
 }

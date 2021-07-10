@@ -29,26 +29,10 @@ namespace CryptoRest.Controllers
         public async Task<IEnumerable<WeatherForecast>> Get()
         {
             var rng = new Random();
-            var request = new Request()
-            {
-                Url = "https://api.binance.com",
-                Endpoint = "/api/v3/exchangeInfo",
-                Params = new Dictionary<string, object>()
-                {
-                    ["key_param"] = "value_params",
-                },
-                Headers = new Dictionary<string, string>()
-                {
-                    ["key_header1"] = "value_header1",
-                    ["key_header2"] = "value_header2"
-                }
-            };
-
-            var http = new  HttpRequest();
-            await http.GetAsync(request);
+            
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast
             {
-                Date = DateTime.Now.AddDays(index),
+                Date = new DateTimeOffset(DateTime.Now).ToUnixTimeMilliseconds(),
                 TemperatureC = rng.Next(-20, 55),
                 Summary = Summaries[rng.Next(Summaries.Length)]
             })

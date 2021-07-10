@@ -4,7 +4,7 @@ using System.Text;
 
 namespace CryptoRest.Library.Entities
 {
-    public class ApiKucoin : ApiBase
+    public class ApiCredentialKucoin : ApiCredentialBase
     {
         public string ApiPassphrase { get; set; }
     }

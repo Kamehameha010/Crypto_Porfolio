@@ -7,17 +7,17 @@ namespace CryptoRest.Library.Utility
 {
     public class UrlUtility
     {
-        readonly static EncryptHMAC _hmac = new EncryptHMAC();
+        static readonly EncryptHMAC _hmac = new EncryptHMAC();
 
-        public static string CreateUri(Request request)
+        public static string CreateUri(Request request, string secret = "")
         {
             return new UriBuilder(request.Url)
             {
                 Path = request.Endpoint,
-                Query = QueryString(request.Params, request.Api)
+                Query = request.Params != null ? QueryString(request.Params, secret) : ""
             }.ToString();
         }
-        public static string QueryString(IDictionary<string, object> parameters, ApiBase api)
+        public static string QueryString(IDictionary<string, object> parameters, string secret = "")
         {
             var listParams = new List<string>();
             foreach (var property in parameters)
@@ -25,8 +25,7 @@ namespace CryptoRest.Library.Utility
                 listParams.Add($"{property.Key}={property.Value}");
             }
             var queryString = String.Join("&", listParams);
-            
-            return string.Concat(queryString, "&signature=", _hmac.EncryptHMACSHA256(queryString, api.ApiSecret));
+            return String.IsNullOrEmpty(secret) ? queryString : string.Concat(queryString, "&signature=", _hmac.EncryptHMACSHA256(queryString, secret));
         }
     }
 }

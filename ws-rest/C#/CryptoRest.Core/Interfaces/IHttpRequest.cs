@@ -1,5 +1,6 @@
 ﻿using CryptoRest.Library.Entities;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace CryptoRest.Library.Interfaces
@@ -8,6 +9,6 @@ namespace CryptoRest.Library.Interfaces
     {
         // TODO
         Task<Object> Post();
-        Task<Object> GetAsync(Request request);
+        Task<Object> GetAsync(string url, Dictionary<string, string> headers);
     }
 }
