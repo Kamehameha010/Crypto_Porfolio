@@ -6,27 +6,71 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link rel="stylesheet" href="css/normalize.css" />
     <link rel="stylesheet" href="css/style.css">
-    <script src="https://code.highcharts.com/highcharts.js"></script>
-    <script src="https://code.highcharts.com/modules/exporting.js"></script>
-    <script src="https://code.highcharts.com/modules/export-data.js"></script>
-    <script src="https://code.highcharts.com/modules/accessibility.js"></script>
 </head>
 
 <body>
 
     <div class="container">
+        <h1>Example Portfolio</h1>
         <div class="form-credentials">
-
             <form action="">
-                <input type="text" class="text" name="apiKey" placeholder="API KEY"
-                    value="XUi5YncD1UqXyzZio8urvCEuWJyo1byUiEVbroT8jJR3jsd7ymPYoeLq7kjgwcgZ">
-                <br>
-                <input type="text" class="text" name="apiSecret" placeholder="API SECRET"
-                    value="rqQkTnb9uycOytKfoqhRNP54TvSyiqaduNmfwTyEHXgbWggB8XVnZ0TUSAb4m8JZ">
-                <br>
-                <input type="submit" value="Send">
+                <div class="select-wallet-exchange">
+                    <label for=""> Select your wallet:</label>
+                    <select class="selected-exchange">
+                        <option value="binance">Binance</option>
+                        <option value="kucoin">Kucoin</option>
+
+                    </select>
+                </div>
+
+                <div class="credentials-api-exchange">
+                    <input type="text" class="credential" name="apiKey" placeholder="API KEY" required>
+                    <input type="text" class="credential" name="apiSecret" placeholder="API SECRET" required>
+                    <input type="text" class="credential hide" name="apiPassphrase" placeholder="API PASSPHRASE"
+                        value="">
+                </div>
+                <input type="submit" value="New Wallet">
+
+
+                <!-- <div class="credentials-binance">
+                    <input type="text" class="text" name="apiKey" placeholder="API KEY"
+                        value="XUi5YncD1UqXyzZio8urvCEuWJyo1byUiEVbroT8jJR3jsd7ymPYoeLq7kjgwcgZ">
+                    <br>
+                    <input type="text" class="text" name="apiSecret" placeholder="API SECRET"
+                        value="rqQkTnb9uycOytKfoqhRNP54TvSyiqaduNmfwTyEHXgbWggB8XVnZ0TUSAb4m8JZ">
+                    <br>
+                </div>
+                <div class="credentials-kucoin">
+                    <input type="text" class="text" name="apiKey" placeholder="API KEY"
+                        value="60ce30d9da67630007d2bcba">
+                    <br>
+                    <input type="text" class="text" name="apiSecret" placeholder="API SECRET"
+                        value="0a3144f8-a61d-4d80-9b41-e596d7f7c694">
+                    <br>
+                    <input type="text" class="text" name="apiPassphrase" placeholder="API Passphrase" value="avion1234">
+                    <br>
+
+                    <input type="radio" id="binance" value="binance">binance
+                    <input type="radio" id="kucoin" value="Kucoin"> Kucoin
+                </div> -->
             </form>
+
+            <div class="wallet-options">
+                <div class="input-group">
+                    <input type="radio" name="wallet" id="all">
+                    <label for="All">All</label>
+                </div>
+                <div class="input-group">
+                    <input type="radio" name="wallet" id="binance">
+                    <label for="Binance">Binance</label>
+                </div>
+                <div class="input-group">
+                    <input type="radio" name="wallet" id="kucoin">
+                    <label for="Kucoin">Kucoin</label>
+                </div>
+            </div>
 
         </div>
         <div class="container-result">
@@ -34,13 +78,14 @@
         <figure class="highcharts-figure">
             <div id="container"></div>
             <p class="highcharts-description">
-              
+
             </p>
-          </figure>
+        </figure>
     </div>
 
     <script src="../bower_components/crypto-js/crypto-js.js"></script>
     <script src="app.js"></script>
+
 </body>
 
 </html>
