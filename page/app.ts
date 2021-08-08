@@ -1,14 +1,23 @@
 const Highcharts = require('highcharts/highcharts');
-const HttpRequest = require('./request');
+let r = require('./request');
+let { HRequest, WKucoin, WBinance } = require('./request');
 
-localStorage.setItem("kucoin", JSON.stringify([]));
-localStorage.setItem("binance", JSON.stringify([]));
+window.addEventListener("load", () => {
+    if (!GetDataStorage("Kucoin")) {
+        localStorage.setItem("kucoin", JSON.stringify([]));
+    }
+    if (!GetDataStorage("binance")) {
+        localStorage.setItem("binance", JSON.stringify([]));
+    }
+})
 
+const kucoinRequests: Promise<any>[] = [];
+const binanceRequests: Promise<any>[] = [];
 
 interface Credential {
     apiKey: string,
     apiSecret: string,
-    apiPassphrase: string
+    apiPassphrase?: string
 }
 
 interface Component {
@@ -35,19 +44,17 @@ function clear(): void {
 }
 
 
-const select = document.querySelector(".selected-exchange");
-let wallet: string = "binance";
+const select = document.querySelector(".selected-exchange") as HTMLSelectElement;
+
 select?.addEventListener("change", WalletToggle);
 
 function WalletToggle(): void {
-    const input: HTMLElement | null = document.querySelector("input[name=apiPassphrase]");
+    const input = document.querySelector("input[name=apiPassphrase]") as HTMLInputElement;
 
     if (input?.classList.contains("hide")) {
-        wallet = "kucoin";
         input?.classList.remove("hide");
 
     } else {
-        wallet = "binance";
         input?.classList.add("hide");
     }
     clear();
@@ -56,92 +63,61 @@ function WalletToggle(): void {
 const submit = document.forms[0];
 submit?.addEventListener("submit", Save);
 
+const walletOptions = document.querySelector(".wallet-options");
+walletOptions?.addEventListener("click", async (evt) => {
+    SelectedOption(evt)
+})
+
 function Save(evt: Event) {
     evt.preventDefault();
-    let credential = getFormData(evt.target as HTMLFormElement) as Credential;
+    let wallet: string = select?.value;
+
+    let credential = GetFormData(evt.target as HTMLFormElement) as Credential;
     StoreCredential(credential, wallet);
     clear();
 }
 
-async function DrawGraphAsync(body: Credential) {
 
-    let uri = `https://localhost:44396/api/v1/Wallet/${wallet}`;
-    let objRequest = new Request(uri, {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify(body)
-    })
-    await HttpRequest.SendAsync(objRequest)
-}
-
-
-function Chart(container: string, title: string, data: object[]) {
-    Highcharts.chart(container, {
-        chart: {
-            plotBackgroundColor: null,
-            plotBorderWidth: null,
-            plotShadow: false,
-            type: 'pie'
-        },
-        title: {
-            text: title
-        },
-        tooltip: {
-            pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
-        },
-        accessibility: {
-            point: {
-                valueSuffix: '%'
-            }
-        },
-        plotOptions: {
-            pie: {
-                allowPointSelect: true,
-                cursor: 'pointer',
-                dataLabels: {
-                    enabled: true,
-                    format: '<b>{point.name}</b>: {point.percentage:.1f} %'
-                }
-            }
-        },
-        series: [{
-            name: 'Brands',
-            colorByPoint: true,
-            data: data
-        }]
-    });
-}
 
 function StoreCredential(credential: Credential, wallet: string): void {
-    if (!isExists(credential, wallet)) {
-        let storage = localStorage.getItem(wallet);
-
-
-        if (storage) {
-            let collection: Credential[] = JSON.parse(storage?.valueOf());
-            collection.push(credential);
-            localStorage.setItem(wallet, JSON.stringify(collection));
-        }
+    if (!IsExists(credential, wallet)) {
+        let credentials = GetDataStorage(wallet) ?? [];
+        credentials.push(credential);
+        SetDataStorage(wallet, credentials);
         return;
     }
     console.error("ya existe");
 
 }
 
-function isExists(credential: Credential, storageName: string): Credential | undefined {
-    let storage = localStorage.getItem(storageName);
-    let collection: Credential[] = JSON.parse(storage ?? "[]");
+function IsExists(credential: Credential, storageName: string): boolean {
+
+    let collection = GetDataStorage(storageName) ?? [];
     if (collection.length > 0) {
-        return collection.find(x => x.apiKey == credential.apiKey
-            && x.apiSecret == x.apiSecret
-            && x.apiPassphrase == credential.apiPassphrase);
+        return collection.find(findVal(credential)) ? true : false;
+    }
+    return false;
+}
+function findVal(credential: Credential): (old: Credential) => boolean {
+
+    return function (old: Credential) {
+        return old.apiKey == credential.apiKey
+            && old.apiSecret == credential.apiSecret
+            && old.apiPassphrase == credential.apiPassphrase
     }
 }
-
-function getFormData(form: HTMLFormElement): object {
+function GetFormData(form: HTMLFormElement): object {
     return Object.fromEntries(new FormData(form).entries());
 }
 
+function GetDataStorage(wallet: string): Credential[] | undefined {
+    let storage = localStorage.getItem(wallet);
+    return JSON.parse(storage ?? "[]");
+}
+function SetDataStorage(wallet: string, credentials: Credential[]): void {
+    let serialize = JSON.stringify(credentials);
+    localStorage.setItem(wallet, serialize);
+}
 /*async function conversion(cryptoInfo) {
     let data = await apiRequest(cryptoInfo);
     let y = searchData(data, "price", "data"),
@@ -149,4 +125,45 @@ function getFormData(form: HTMLFormElement): object {
     return { name, y };
 }
  */
+
+async function SendRequestAsync(wallet: string, body: Credential): Promise<any> {
+
+    let uri = `https://localhost:44396/api/v1/Wallet/${wallet}`;
+    let objRequest = new Request(uri, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(body)
+    })
+    return await HRequest.SendAsync(objRequest)
+}
+
+async function WalletRequestAsync(wallet: string): Promise<any[]> {
+    let collection = GetDataStorage(wallet) as Credential[];
+    let arrPromise = collection?.map(async (credential) => await SendRequestAsync(wallet, credential));
+    return await Promise.all(arrPromise);
+}
+
+async function AllWalletRequestAsync(): Promise<[any[], any[]]> {
+    return await Promise.all([WalletRequestAsync("binance"), WalletRequestAsync("kucoin")]);
+}
+
+async function SelectedOption(evt: Event) {
+    let { id: target } = evt.target as HTMLInputElement;
+    switch (target) {
+        case "all":
+            console.log(await AllWalletRequestAsync())
+            break;
+        case "binance":
+            console.log(new WBinance(await WalletRequestAsync("binance")))
+            break;
+        case "kucoin":
+            console.log(new WKucoin(await WalletRequestAsync("kucoin")))
+            break;
+    }
+}
+
+
+
+
+
 
