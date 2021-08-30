@@ -1,5 +1,5 @@
-const Highcharts = require('highcharts/highcharts');
-let r = require('./request');
+
+
 let { HRequest, WKucoin, WBinance } = require('./request');
 
 window.addEventListener("load", () => {
@@ -77,8 +77,6 @@ function Save(evt: Event) {
     clear();
 }
 
-
-
 function StoreCredential(credential: Credential, wallet: string): void {
     if (!IsExists(credential, wallet)) {
         let credentials = GetDataStorage(wallet) ?? [];
@@ -154,10 +152,17 @@ async function SelectedOption(evt: Event) {
             console.log(await AllWalletRequestAsync())
             break;
         case "binance":
-            console.log(new WBinance(await WalletRequestAsync("binance")))
+            for await (const iterator of await WalletRequestAsync("binance")) {
+                console.log(new WBinance(iterator))
+            }
+
             break;
         case "kucoin":
-            console.log(new WKucoin(await WalletRequestAsync("kucoin")))
+            for (const iterator of await WalletRequestAsync("kucoin")) {
+                console.log(iterator);
+                
+                console.log(new WKucoin(iterator))
+            }
             break;
     }
 }
@@ -167,3 +172,20 @@ async function SelectedOption(evt: Event) {
 
 
 
+/* localStorage.setItem("clicks", JSON.stringify([]));
+let nuevo: Array<HTMLElement | HTMLInputElement | HTMLDivElement | HTMLButtonElement | HTMLSelectElement | HTMLOptionElement> = [];
+window.addEventListener("click", e => {
+    console.clear()
+    let element = e.target as HTMLElement
+    nuevo.push(element);
+    let name = element.nodeName
+    let y: keyof typeof element
+    for (y in element) {
+
+        if (typeof element[y] === "string" && element[y] != "") {
+            console.table(y + "--->" + element[y]);
+
+        }
+    }
+
+}) */
