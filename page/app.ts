@@ -22,7 +22,8 @@ interface Credential {
 
 interface Component {
     element: string;
-    type: string;
+    id?: string;
+    type?: string;
     name?: string;
     placeholder?: string;
     className?: string;
@@ -126,7 +127,7 @@ function SetDataStorage(wallet: string, credentials: Credential[]): void {
 
 async function SendRequestAsync(wallet: string, body: Credential): Promise<any> {
 
-    let uri = `https://localhost:44396/api/v1/Wallet/${wallet}`;
+    let uri = `http://localhost:8190/api/v1/Wallet/${wallet}`;
     let objRequest = new Request(uri, {
         method: "POST",
         headers: { "content-type": "application/json" },
@@ -147,28 +148,32 @@ async function AllWalletRequestAsync(): Promise<[any[], any[]]> {
 
 async function SelectedOption(evt: Event) {
     let { id: target } = evt.target as HTMLInputElement;
+    let divCount = 0;
+    let chartContainer = document.querySelector(".highcharts-figure");
     switch (target) {
         case "all":
             console.log(await AllWalletRequestAsync())
             break;
         case "binance":
             for await (const iterator of await WalletRequestAsync("binance")) {
-                console.log(new WBinance(iterator))
+                let id = `chart-binance-n${++divCount}`;
+                let subContainer = createElement({ element: "div", id: id });
+                chartContainer?.appendChild(subContainer);
+                new WBinance(iterator, id, "Portfolio");
             }
 
             break;
         case "kucoin":
             for (const iterator of await WalletRequestAsync("kucoin")) {
-                console.log(iterator);
-                
-                console.log(new WKucoin(iterator))
+                let id = `chart-kucoin6-n${++divCount}`;
+                let subContainer = createElement({ element: "div", id: id });
+                chartContainer?.appendChild(subContainer);
+                new WKucoin(iterator, id, "Portfolio");
             }
             break;
     }
+    divCount = 0;
 }
-
-
-
 
 
 

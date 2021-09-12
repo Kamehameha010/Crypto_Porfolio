@@ -8520,6 +8520,27 @@
   var require_request = __commonJS({
     "page/request.ts"(exports, module) {
       var Highcharts = require_highcharts();
+      Array.prototype.groupBy = function(propertyName) {
+        let map = new Map(), groups = [];
+        this.forEach((item) => {
+          let key = item[propertyName];
+          if (map.has(key)) {
+            let elm = map.get(key);
+            elm.push(item);
+            map.set(key, elm);
+          } else {
+            map.set(key, [item]);
+          }
+        });
+        for (const it of Array.from(map)) {
+          groups.push(Object.defineProperty(new Object(), it[0], {
+            value: it[1],
+            enumerable: true,
+            writable: false
+          }));
+        }
+        return groups;
+      };
       var Chart = class {
         constructor(container, title, data) {
           this.renderChart(container, title, data);
@@ -8613,6 +8634,7 @@
             let currency = t.currency, holds = this.toFloat(t.holds.toString(), 7), balance = this.toFloat(t.balance.toString(), 7), available = this.toFloat(t.available.toString(), 7), type = t.type;
             return { currency, balance, available, holds, type };
           });
+          console.log("groupbu", this.cryptos.groupBy("currency"));
         }
         Render() {
           const series = this.cryptos.map((token) => {
@@ -8620,7 +8642,6 @@
             y = parseFloat(y.toFixed(7));
             return { name, y };
           });
-          console.log(series);
           new Chart(this.container, this.title, series);
         }
       };
@@ -8646,7 +8667,6 @@
             y = parseFloat(y.toFixed(7));
             return { name, y };
           });
-          console.log(series);
           new Chart(this.container, this.title, series);
         }
       };
@@ -8668,6 +8688,15 @@
       localStorage.setItem("binance", JSON.stringify([]));
     }
   });
+  function createElement(config) {
+    let element = document.createElement(`${config.element}`);
+    let key;
+    for (key in config) {
+      element.setAttribute(key, `${config[key]}`);
+    }
+    ;
+    return element;
+  }
   function clear() {
     const inputs = document.querySelectorAll("input[type=text]");
     inputs.forEach((element) => {
@@ -8731,7 +8760,7 @@
     localStorage.setItem(wallet, serialize);
   }
   async function SendRequestAsync(wallet, body) {
-    let uri = `https://localhost:44396/api/v1/Wallet/${wallet}`;
+    let uri = `http://localhost:8190/api/v1/Wallet/${wallet}`;
     let objRequest = new Request(uri, {
       method: "POST",
       headers: { "content-type": "application/json" },
@@ -8749,21 +8778,29 @@
   }
   async function SelectedOption(evt) {
     let { id: target } = evt.target;
+    let divCount = 0;
+    let chartContainer = document.querySelector(".highcharts-figure");
     switch (target) {
       case "all":
         console.log(await AllWalletRequestAsync());
         break;
       case "binance":
         for await (const iterator of await WalletRequestAsync("binance")) {
-          console.log(new WBinance(iterator));
+          let id = `chart-binance-n${++divCount}`;
+          let subContainer = createElement({ element: "div", id });
+          chartContainer?.appendChild(subContainer);
+          new WBinance(iterator, id, "Portfolio");
         }
         break;
       case "kucoin":
         for (const iterator of await WalletRequestAsync("kucoin")) {
-          console.log(iterator);
-          console.log(new WKucoin(iterator));
+          let id = `chart-kucoin6-n${++divCount}`;
+          let subContainer = createElement({ element: "div", id });
+          chartContainer?.appendChild(subContainer);
+          new WKucoin(iterator, id, "Portfolio");
         }
         break;
     }
+    divCount = 0;
   }
 })();

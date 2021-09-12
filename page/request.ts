@@ -1,6 +1,34 @@
 const Highcharts = require('highcharts/highcharts');
 
 
+
+interface Array<T> {
+    groupBy(propertyName: keyof T): T[];
+}
+Array.prototype.groupBy = function <T, K extends keyof T>(propertyName: K) {
+    let map = new Map(), groups = [];
+    this.forEach(item => {
+        let key = item[propertyName];
+        if (map.has(key)) {
+            let elm = map.get(key);
+            elm.push(item);
+            map.set(key, elm);
+        } else {
+            map.set(key, [item])
+        }
+    });
+    for (const it of Array.from(map)) {
+        groups.push(Object.defineProperty(new Object(), it[0], {
+            value: it[1],
+            enumerable: true,
+            writable: false
+        }));
+    }
+    return groups;
+};
+
+
+
 class Chart {
     constructor(container: string, title: string, data: object[]) {
         this.renderChart(container, title, data);
@@ -152,19 +180,18 @@ class WalletKucoin extends Wallet {
                 let currency = t.currency, holds = this.toFloat(t.holds.toString(), 7),
                     balance = this.toFloat(t.balance.toString(), 7), available = this.toFloat(t.available.toString(), 7), type = t.type;
                 return { currency, balance, available, holds, type };
-            });
+            })
+        console.log("groupbu", this.cryptos.groupBy("currency"))
     }
     Render(): void {
-        const series: object[] = this.cryptos.map(token => {
+
+        const series: object[] = this.cryptos.map((token) => {
             let { currency: name, balance: y }: { currency: string, balance: number } = token;
             y = parseFloat(y.toFixed(7));
-            //return { name, y };
-            let o = {};
-            return Object.assign(token, )
-        });
-        console.log(series);
+            return { name, y };
 
-        //new Chart(this.container, this.title, series);
+        });
+        new Chart(this.container, this.title, series);
     }
 }
 
@@ -178,6 +205,7 @@ class WalletBinance extends Wallet {
         this.container = container;
         this.title = title;
         this.Render();
+
     }
     GetCapital(): object {
         throw new Error("Method not implemented.");
@@ -193,19 +221,17 @@ class WalletBinance extends Wallet {
     }
 
     Render(): void {
-        const series: object[] = this.cryptos.map(token => {
+
+        const series: object[] = this.cryptos.map((token) => {
             let { coin: name, balance: y }: { coin: string, balance: number } = token;
             y = parseFloat(y.toFixed(7));
             return { name, y };
         });
-        console.log(series);
-
-        //new Chart(this.container, this.title, series);
+        new Chart(this.container, this.title, series);
     }
 }
 
 function SearchKey(object: object, key: string, initKey?: keyof typeof object): Object | null {
-
 
     if (initKey) {
         object = object[initKey];
